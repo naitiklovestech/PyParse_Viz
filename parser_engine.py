@@ -13,9 +13,9 @@ def p_statements(p):
     '''statements : statement
                   | statements statement'''
     if len(p) == 2:
-        p[0] = [p[1]] if p[1] is not None else []
+        p[0] = p[1]
     else:
-        p[0] = p[1] + ([p[2]] if p[2] is not None else [])
+        p[0] = ('STATEMENTS', p[1], p[2])
 
 def p_statement(p):
     '''statement : assignment
@@ -67,9 +67,9 @@ def p_parameter_list(p):
     '''parameter_list : NAME
                       | parameter_list COMMA NAME'''
     if len(p) == 2:
-        p[0] = [p[1]]
+        p[0] = p[1]
     else:
-        p[0] = p[1] + [p[3]]
+        p[0] = ('PARAMS', p[1], p[3])
 
 def p_return_statement(p):
     'return_statement : RETURN expression'
@@ -116,9 +116,8 @@ def p_factor(p):
     elif len(p) == 3:
         p[0] = ('NOT', p[2]) if build_ast else ('not_expr', 'not', p[2])
     elif len(p) == 4:
-        p[0] = p[2]  # expression inside parentheses
+        p[0] = p[2]
     else:
-        # function call
         p[0] = ('CALL', p[1], p[3]) if build_ast else ('function_call', p[1], '(', p[3], ')')
 
 def p_arguments(p):
@@ -130,9 +129,9 @@ def p_argument_list(p):
     '''argument_list : expression
                      | argument_list COMMA expression'''
     if len(p) == 2:
-        p[0] = [p[1]]
+        p[0] = p[1]
     else:
-        p[0] = p[1] + [p[3]]
+        p[0] = ('ARGS', p[1], p[3])
 
 def p_empty(p):
     'empty :'
@@ -144,7 +143,6 @@ def p_error(p):
     else:
         print("Syntax error at EOF")
 
-# Build the parser
 parser = yacc.yacc()
 
 def generate_parse_tree(code):
